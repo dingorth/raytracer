@@ -134,6 +134,5 @@ type camera = camera_position * focus * pixel_width * resolution
 
 type picture = scene * pixel_width
 
-(* type scatter' = (light robject, light) scatter *)
 type surface' = (light robject, light) surface
 type 'a surface'' = ('a, light) surface

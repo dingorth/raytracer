@@ -94,10 +94,6 @@ let parse_scene scene_json =
 let raytrace camera scene = 
     () *)
 
-let light1 = (new central (V.create 1. 1. 0.25) (V.create 1500. 1500. 1500.) :>  light);; 
-let lights = [light1];;
-let sphere1 = new sphere (V.create 1.25 0. 0.5) (-1.25);;
-let plane1 = new plane (V.create 0. 0. 1.) 2.;;
 let scatter1 = new scatter (V.create 1. 1. 1.);;
 let scatter_zrzutowany_na_surface = (scatter1 :> surface');;
 (* let ob1 = new robject (sphere1:>shape) (scatter1:>surface');; *)
