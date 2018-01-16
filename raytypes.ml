@@ -128,12 +128,13 @@ type scene = Scene of light robject list * light list
 (* CAMERA *)
 type resolution = int * int
 type pixel_width = float   (* width of int *)
+type pixel_height = float (* height of int *)
 type focus = V.t
 type camera_position = V.t * V.t * V.t * V.t
 
-type camera = camera_position * focus * pixel_width * resolution
+type camera = camera_position * focus * pixel_width * pixel_height * resolution
 
-type picture = scene * pixel_width
+type picture = scene * pixel_width * pixel_height
 
 type scatter' = (light robject, light) scatter
 type surface' = (light robject, light) surface

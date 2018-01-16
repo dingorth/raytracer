@@ -23,4 +23,6 @@ struct
     let dot v1 v2 = zip_with ( *.) v1 v2 |> fold (+.) 0.
     let length v = dot v v |> sqrt
     let normalize v = div_scalar (abs_float (length v)) v
+
+    let dist v1 v2 = let l = sub v1 v2 in dot l l |> sqrt
 end

@@ -26,9 +26,10 @@ let parse_camera camera_json =
         resolution_json |> to_list |> filter_int |> foo
     in
 
-    let pixel_width = 1.0 in (* policzyć to !!!!!!!!!! *)
+    let pixel_width = (V.dist position_a_vect position_b_vect) /. float_of_int (fst resolution) in
+    let pixel_height = (V.dist position_a_vect position_c_vect) /. float_of_int (snd resolution) in
     
-    camera_position, focus, pixel_width, resolution
+    camera_position, focus, pixel_width, pixel_height, resolution
 
 let parse_sphere shape_json = 
     let open Yojson.Basic.Util in
@@ -68,7 +69,6 @@ let parse_light light_json =
 let parse_scatter surface_json =
     let open Yojson.Basic.Util in
     let color = surface_json |> member "color" |> to_list |> filter_float |> V.create_from_list in
-    (* problem z rzutowaniem na konkretny typ *)
     ((new scatter color) :> surface')
 
 let parse_surface surface_json =
