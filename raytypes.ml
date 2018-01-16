@@ -56,17 +56,18 @@ inherit shape
 end
 
 (* SURFACES *)
+
 class virtual ['a, 'b] surface = object
     (* 'a == robject, 'b == light *)
     method virtual color : ray -> intersect_point -> normal_vect -> 'a list -> 'b list -> color
 end
 
-class ['a, 'b] scatter color' = object
+class ['a, 'b] scatter (color': color) = object
 inherit ['a, 'b] surface
 
-    val color'' = color'
+    val color'' = V.normalize color'
 
-    method color ray isect_point normal_vect lrobject llight = 
+    method color (ray:ray) (isect_point:intersect_point) (normal_vect:normal_vect) (lrobject: 'a list) (llight: 'b list) = 
         let light_unreachable l = 
             let isect_to_light = Ray(isect_point, V.negate (l#direction isect_point)) in (* uwaga na kierunek swiatla *)
             List.exists (fun o -> 
@@ -92,6 +93,7 @@ inherit ['a, 'b] surface
 end
 
 (* OBJECT *)
+
 class ['a] robject (sh : shape) (surf : (('self, 'a) surface)) = object(self : 'self)
     val shape = sh
     method shape = shape
@@ -101,6 +103,7 @@ class ['a] robject (sh : shape) (surf : (('self, 'a) surface)) = object(self : '
 end
 
 (* LIGHT *)
+
 class virtual light = object
     method virtual intensity : intersect_point -> color
     method virtual direction : intersect_point -> V.t
@@ -115,8 +118,7 @@ class central (pos : V.t) (pwr : color) = object
         let d = V.length @@ V.sub pos i in
         V.div_scalar (d*.d) pwr
     
-    method direction i = V.sub position i
-    
+    method direction i = V.sub position i 
 end
 
 (* SCENE *)
@@ -131,7 +133,6 @@ type camera_position = V.t * V.t * V.t * V.t
 type camera = camera_position * focus * pixel_width * resolution
 
 type picture = scene * pixel_width
-
 
 (* type scatter' = (light robject, light) scatter *)
 type surface' = (light robject, light) surface
