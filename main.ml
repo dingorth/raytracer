@@ -55,7 +55,7 @@ let parse_shape shape_json =
 let parse_scatter surface_json =
     let open Yojson.Basic.Util in
     let color = surface_json |> member "color" |> to_list |> filter_float |> V.create_from_list in
-    ((new scatter color) :> ((light robject, light) surface)) 
+    ((new scatter color) :> ((light robject, light) scatter)) 
 
 let parse_surface surface_json =
     let open Yojson.Basic.Util in
