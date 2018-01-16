@@ -1,4 +1,4 @@
-open Core.Std;;
+(* open Core.Std;; *)
 open Vector3d;; 
 open Graphics;;
 module J = Yojson;;
@@ -82,12 +82,12 @@ let parse_robject robject_json =
     let open Yojson.Basic.Util in
     let surface = robject_json |> member "surface" |> parse_surface in
     let shape = robject_json |> member "shape" |> parse_shape in
-    (new robject shape surface)
+    (new robject (shape :> shape) (surface :> surface'))
 
 let parse_scene scene_json = 
     let open Yojson.Basic.Util in
-    let lights = List.map (scene_json |> member "lights" |> to_list) ~f:(parse_light) in
-    let robjects = List.map (scene_json |> member "robjects" |> to_list) ~f:(parse_robject) in
+    let lights = List.map parse_light (scene_json |> member "lights" |> to_list)  in
+    let robjects = List.map parse_robject (scene_json |> member "robjects" |> to_list) in
     Scene(robjects, lights)
 
 (* DONE PARSING *)

@@ -95,7 +95,8 @@ end
 
 (* OBJECT *)
 
-class ['a] robject (sh : shape) (surf : (('self, 'a) surface)) = object(self : 'self)
+class ['b] robject (sh : shape) (surf : (('self, 'b) surface)) = object(self : 'self)
+(* 'b == light *)
     val shape = sh
     method shape = shape
 
@@ -137,7 +138,7 @@ type camera = camera_position * focus * pixel_width * pixel_height * resolution
 
 (* concrete types aliases *)
 type surface' = (light robject, light) surface
-type robject' = shape robject
+type robject' = light robject
 
 (* picture pixels *)
 type pixel = Pixel of int * int * color
