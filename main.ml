@@ -87,8 +87,8 @@ let parse_robject robject_json =
 let parse_scene scene_json = 
     let open Yojson.Basic.Util in
     (* trzeba parsować listy obiektow i swiatel a nie pojedyncze *)
-    let lights = scene_json |> member "lights" |> to_list |> parse_light in
-    let robjects = scene_json |> member "robjects" |> to_list |> parse_robject in
+    let lights = List.map (scene_json |> member "lights" |> to_list) ~f:(parse_light) in
+    let robjects = List.map (scene_json |> member "robjects" |> to_list) ~f:(parse_robject) in
     robjects, lights
 
 let () =
