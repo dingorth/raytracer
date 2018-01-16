@@ -4,6 +4,9 @@ struct
     type scalar = float
     
     let create x y z = x, y, z
+    let create_from_list = function 
+        | [x; y; z] -> x, y, z 
+        | _ -> failwith "not 3d vector"
 
     let map f = function (x,y,z) -> (f x, f y, f z)
     let zip_with f v1 v2 = match v1, v2 with 
