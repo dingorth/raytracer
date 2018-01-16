@@ -134,14 +134,25 @@ type pixel_width = float   (* width of int *)
 type pixel_height = float (* height of int *)
 type focus = V.t
 type camera_position = V.t * V.t * V.t * V.t
+let get_position_a = function (a,_,_,_) -> a
+let get_position_b = function (_,b,_,_) -> b
+let get_position_c = function (_,_,c,_) -> c
+let get_position_d = function (_,_,_,d) -> d
 type camera = camera_position * focus * pixel_width * pixel_height * resolution
+let get_camera_position = function (p,_,_,_,_) -> p
+let get_camera_focus = function (_,f,_,_,_) -> f
+let get_camera_pixel_width = function (_,_,pw,_,_) -> pw
+let get_camera_pixel_height = function (_,_,_,ph,_) -> ph
+let get_camera_resolution (c:camera) : resolution = match c with (_,_,_,_,r) -> r
 
 (* concrete types aliases *)
 type surface' = (light robject, light) surface
 type robject' = light robject
 
 (* picture pixels *)
-type pixel = Pixel of int * int * color
+type pixel_f = V.t
+type pixel_i = int * int
+type pixel = Pixel of pixel_i * pixel_f * color
 let get_pixel_position = function Pixel(x,y,_) -> x, y
 let get_pixel_color = function Pixel(_,_,c) -> c
 
@@ -150,3 +161,4 @@ type picture = pixel list
 (* ... *)
 type distance = float
 type intersecting_obj = NoneI | OneI of robject' * distance
+type ray_obj_dist = None | One of float

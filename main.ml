@@ -92,8 +92,6 @@ let parse_scene scene_json =
 
 (* DONE PARSING *)
 
-type ray_obj_dist = None | One of float
-
 let smallest_positive_distance ray robj =
     let d_list = robj#shape#intersect ray in
     try 
@@ -125,8 +123,40 @@ let cast_ray source destination scene =
             let normal_v = shape#normal isect_point in
             surface#color ray isect_point normal_v objects lights
 
+(* should start from 0 or from 1 ??? *)
+(* column x row *)
+let generate_picture_pixel_grid width height =
+    let rec bar param max acc iter = match iter with
+        | 0 -> acc 
+        | n -> bar param max ((max - n, param)::acc) (n-1)
+    in
+    let rec foo acc iter = match iter with
+        | 0 -> acc
+        | n -> foo ((bar (height-n) width [] width) @ acc) (n-1)
+    in
+    foo [] height;;
+
+let generate_picture_points camera =
+    let width_int, height_int = get_camera_resolution camera in 
+    let pixel_height = get_camera_pixel_height camera in
+    let pixel_width = get_camera_pixel_width camera in
+    let a_point = get_camera_position camera |> get_position_a in
+    let b_point = get_camera_position camera |> get_position_b in
+    let c_point = get_camera_position camera |> get_position_c in
+    let d_point = get_camera_position camera |> get_position_d in
+    let a_to_b_vec = V.sub b_point a_point |> V.normalize |> V.mul_scalar pixel_width in
+    let a_to_c_vec = V.sub c_point a_point |> V.normalize |> V.mul_scalar pixel_height in
+    let p  = generate_picture_pixel_grid width_int height_int in
+    let rtn = List.map (fun e -> e, a_point |> V.add (V.mul_scalar (float_of_int @@ fst e) a_to_b_vec) |> V.add (V.mul_scalar ( float_of_int @@ snd e) a_to_c_vec) ) p in
+    rtn
+
 let raytrace camera scene = 
-    []
+    let pixels = generate_picture_points camera in
+    List.map (fun p -> 
+        match p with (pixeli, pixelf) -> 
+            let clr = cast_ray pixelf (get_camera_focus camera) scene in
+            pixeli, pixelf, clr
+        ) pixels
 
 let draw_picture picture = 
     ()
