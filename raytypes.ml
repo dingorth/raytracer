@@ -22,10 +22,10 @@ class virtual shape = object
     method virtual normal: V.t -> V.t
 end
 
-class sphere x y z r = object
+class sphere c r = object
 inherit shape
 
-    val center: V.t = V.create x y z
+    val center: V.t = c
     method center = center
 
     val radius: float = r
@@ -41,10 +41,10 @@ inherit shape
     method normal v = V.normalize (V.sub v center)
 end
 
-class plane a b c d = object
+class plane v d = object
 inherit shape
     
-    val abc = V.create a b c
+    val abc = v
     val d = d
     
     method intersect r = 
@@ -64,7 +64,7 @@ end
 class ['a, 'b] scatter color' = object
 inherit ['a, 'b] surface
 
-    val color = color'
+    val color'' = color'
 
     method color ray isect_point normal_vect lrobject llight = 
         let light_unreachable l = 
@@ -85,7 +85,7 @@ inherit ['a, 'b] surface
                         V.negate normal_vect else normal_vect in
                     if V.dot isect_to_light_vect normal' < 0. 
                     then light_iter acc ls
-                    else light_iter (V.add acc ( V.mul (V.mul_scalar (V.dot normal' isect_to_light_vect) (l#intensity isect_point)) color )) ls 
+                    else light_iter (V.add acc ( V.mul (V.mul_scalar (V.dot normal' isect_to_light_vect) (l#intensity isect_point)) color'' )) ls 
                 else light_iter acc ls
         in
         light_iter (V.create 0. 0. 0.) llight

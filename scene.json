@@ -9,17 +9,21 @@
         ],
         "robjects": [
             {
-                "type": "sphere",
-                "center": [0.0, 0.0, 0.0],
-                "radius": 10.0,
+                "shape":{
+                    "type": "sphere",
+                    "center": [0.0, 0.0, 0.0],
+                    "radius": 10.0
+                },
                 "surface": {
                     "type": "scatter",
                     "color": [0.0, 0.0, 0.0]
                 }
             },
             {
-                "type": "plane",
-                "parameters": [0.0, 0.0, 0.0, 0.0],
+                "shape":{
+                    "type": "plane",
+                    "parameters": [0.0, 0.0, 0.0, 0.0]
+                },
                 "surface": {
                     "type": "scatter",
                     "color": [0.0, 0.0, 0.0]
