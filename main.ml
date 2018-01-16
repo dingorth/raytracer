@@ -1,17 +1,28 @@
 open Core.Std;;
-open Vector3d;; (* Vec3d *)
-open Raytypes
-module J = Yojson;;
-module V = Vector3d.Vec3d
-
-
+open Vector3d;; 
 open Graphics;;
+module J = Yojson;;
+module V = Vector3d.Vec3d;;
 
-print_string "Hello world!\n";;
+type pixels = V.t list
+(* generate_picture : picture -> pixels *)
 
-let o1 = new sphere 1. 2. 3. 4.
-let o2 = new plane 1. 4. 5. 2.
-
-let list = [(o1 :> shape); (o2 :> shape)]
+let generate_picture p = []
 
 
+let () =
+    let argNr = Array.length Sys.argv - 1 in
+    if argNr <> 2
+    then
+        Printf.fprintf stdout "wrong parameters\n"
+    else
+        let json_file = Sys.argv.(1) in
+        let json = Yojson.Basic.from_file json_file in
+        
+        let open Yojson.Basic.Util in
+        let scene_json = json |> member "scene" in
+        let camera_json = json |> member "camera" in
+        print_string "parsed"        
+
+
+;;

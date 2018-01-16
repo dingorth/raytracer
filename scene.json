@@ -1,0 +1,40 @@
+{
+    "scene": {
+        "lights": [
+            {
+                "type": "central",
+                "position": [0.0, 0.0, 0.0],
+                "color": [0.0, 0.0, 0.0]
+            }
+        ],
+        "robjects": [
+            {
+                "type": "sphere",
+                "center": [0.0, 0.0, 0.0],
+                "radius": 10.0,
+                "surface": {
+                    "type": "scatter",
+                    "color": [0.0, 0.0, 0.0]
+                }
+            },
+            {
+                "type": "plane",
+                "parameters": [0.0, 0.0, 0.0, 0.0],
+                "surface": {
+                    "type": "scatter",
+                    "color": [0.0, 0.0, 0.0]
+                }
+            }
+        ]
+    },
+    "camera": {
+        "position": {
+            "a": [0.0, 0.0, 0.0],
+            "b": [0.0, 0.0, 0.0],
+            "c": [0.0, 0.0, 0.0],
+            "d": [0.0, 0.0, 0.0]
+        },
+        "focus" : [0.0, 0.0, 0.0],
+        "resolution": [400, 400]
+    }
+}
