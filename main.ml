@@ -65,7 +65,7 @@ let parse_light light_json =
             | "central" -> parse_light_central light_json
             | _ -> failwith "wrong light type"
 
-(* let parse_scatter surface_json =
+let parse_scatter surface_json =
     let open Yojson.Basic.Util in
     let color = surface_json |> member "color" |> to_list |> filter_float |> V.create_from_list in
     (* problem z rzutowaniem na konkretny typ *)
@@ -86,17 +86,18 @@ let parse_robject robject_json =
 
 let parse_scene scene_json = 
     let open Yojson.Basic.Util in
-    (* trzeba parsować listy obiektow i swiatel a nie pojedyncze *)
     let lights = List.map (scene_json |> member "lights" |> to_list) ~f:(parse_light) in
     let robjects = List.map (scene_json |> member "robjects" |> to_list) ~f:(parse_robject) in
     robjects, lights
 
 let raytrace camera scene = 
-    () *)
+    () 
 
-let scatter1 = new scatter (V.create 1. 1. 1.);;
-let scatter_zrzutowany_na_surface = (scatter1 :> surface');;
-(* let ob1 = new robject (sphere1:>shape) (scatter1:>surface');; *)
+let draw_picture picture = 
+    ()
+
+let save_picture path picture =
+    ()
 
 let () =
     let argNr = Array.length Sys.argv - 1 in
@@ -108,8 +109,10 @@ let () =
         let json = Yojson.Basic.from_file json_file in
         
         let open Yojson.Basic.Util in
-        (* let camera = json |> member "camera" |> parse_camera in *)
-        (* let scene = json |> member "scene" |> parse_scene in *)
-        (* let picture = raytrace camera scene in *)
+        let camera = json |> member "camera" |> parse_camera in
+        let scene = json |> member "scene" |> parse_scene in
+        let picture = raytrace camera scene in
+        draw_picture picture; save_picture Sys.argv.(2) picture; 
+        print_string "saved picture\n";
         ()
 ;;

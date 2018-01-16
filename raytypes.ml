@@ -64,15 +64,16 @@ end
 
 class ['a, 'b] scatter (color': color) = object
 inherit ['a, 'b] surface
+(* 'a == robject, 'b == light *)
 
     val color'' = V.normalize color'
 
     method color (ray:ray) (isect_point:intersect_point) (normal_vect:normal_vect) (lrobject: 'a list) (llight: 'b list) = 
-        let light_unreachable l = 
+        let light_unreachable (l : 'b) = 
             let isect_to_light = Ray(isect_point, V.negate (l#direction isect_point)) in (* uwaga na kierunek swiatla *)
             List.exists (fun o -> 
                 let d_list = o#shape#intersect isect_to_light in 
-                    List.exists (fun e -> e < 1 && e > 0) d_list
+                    List.exists (fun e -> e < 1. && e > 0.) d_list
                 ) 
                 lrobject
         in
@@ -134,5 +135,6 @@ type camera = camera_position * focus * pixel_width * resolution
 
 type picture = scene * pixel_width
 
+type scatter' = (light robject, light) scatter
 type surface' = (light robject, light) surface
 type 'a surface'' = ('a, light) surface
