@@ -91,6 +91,9 @@ let parse_scene scene_json =
     let robjects = List.map (scene_json |> member "robjects" |> to_list) ~f:(parse_robject) in
     robjects, lights
 
+let raytrace camera scene = 
+    ()
+
 let () =
     let argNr = Array.length Sys.argv - 1 in
     if argNr <> 2
@@ -101,9 +104,10 @@ let () =
         let json = Yojson.Basic.from_file json_file in
         
         let open Yojson.Basic.Util in
-        let scene_json = json |> member "scene" in
-        let camera_json = json |> member "camera" in
-        print_string "parsed\n"
+        let camera = json |> member "camera" |> parse_camera in
+        let scene = json |> member "scene" |> parse_scene in
+        let picture = raytrace camera scene in
+        ()
 ;;
 
 
