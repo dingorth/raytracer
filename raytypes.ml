@@ -131,3 +131,6 @@ type camera_position = V.t * V.t * V.t * V.t
 type camera = camera_position * focus * pixel_width * resolution
 
 type picture = scene * pixel_width
+
+
+type surface' = (light robject,light) surface

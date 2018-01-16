@@ -4,7 +4,7 @@ struct
     type scalar = float
     
     let create x y z = x, y, z
-    let create_from_list = function 
+    let create_from_list (l : float list) : t = match l with 
         | [x; y; z] -> x, y, z 
         | _ -> failwith "not 3d vector"
 
