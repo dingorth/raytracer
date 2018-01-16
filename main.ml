@@ -88,10 +88,27 @@ let parse_scene scene_json =
     let open Yojson.Basic.Util in
     let lights = List.map (scene_json |> member "lights" |> to_list) ~f:(parse_light) in
     let robjects = List.map (scene_json |> member "robjects" |> to_list) ~f:(parse_robject) in
-    robjects, lights
+    Scene(robjects, lights)
+
+(* DONE PARSING *)
+
+let closest_object ray objects =
+    None
+
+let cast_ray source destination scene =
+    let ray = Ray(source, destination) in
+    let objects = get_scene_objects scene in
+    let lights = get_scene_lights scene in
+    let obj = closest_object ray objects in
+    match obj with
+        | None -> V.create 0. 0. 0.
+        | One(o,d) -> let shape = o#shape and surface = o#surface in
+            let isect_point = V.add source (V.mul_scalar d destination) in (* chyba tak *)
+            let normal_v = shape#normal isect_point in
+            surface#color ray isect_point normal_v objects lights
 
 let raytrace camera scene = 
-    () 
+    []
 
 let draw_picture picture = 
     ()

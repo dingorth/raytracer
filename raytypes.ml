@@ -58,13 +58,13 @@ end
 (* SURFACES *)
 
 class virtual ['a, 'b] surface = object
-    (* 'a == robject, 'b == light *)
+    (* 'a == light robject, 'b == light *)
     method virtual color : ray -> intersect_point -> normal_vect -> 'a list -> 'b list -> color
 end
 
 class ['a, 'b] scatter (color': color) = object
 inherit ['a, 'b] surface
-(* 'a == robject, 'b == light *)
+(* 'a == light robject, 'b == light *)
 
     val color'' = V.normalize color'
 
@@ -124,6 +124,8 @@ end
 
 (* SCENE *)
 type scene = Scene of light robject list * light list
+let get_scene_objects = function Scene(o, _) -> o
+let get_scene_lights = function Scene(_, l) -> l
 
 (* CAMERA *)
 type resolution = int * int
@@ -131,11 +133,19 @@ type pixel_width = float   (* width of int *)
 type pixel_height = float (* height of int *)
 type focus = V.t
 type camera_position = V.t * V.t * V.t * V.t
-
 type camera = camera_position * focus * pixel_width * pixel_height * resolution
 
-type picture = scene * pixel_width * pixel_height
-
-type scatter' = (light robject, light) scatter
+(* concrete types aliases *)
 type surface' = (light robject, light) surface
-type 'a surface'' = ('a, light) surface
+type robject' = shape robject
+
+(* picture pixels *)
+type pixel = Pixel of int * int * color
+let get_pixel_position = function Pixel(x,y,_) -> x, y
+let get_pixel_color = function Pixel(_,_,c) -> c
+
+type picture = pixel list
+
+(* ... *)
+type distance = float
+type intersecting_obj = None | One of robject' * distance
