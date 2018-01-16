@@ -149,4 +149,4 @@ type picture = pixel list
 
 (* ... *)
 type distance = float
-type intersecting_obj = None | One of robject' * distance
+type intersecting_obj = NoneI | OneI of robject' * distance

@@ -92,8 +92,26 @@ let parse_scene scene_json =
 
 (* DONE PARSING *)
 
-let closest_object ray objects =
-    None
+type ray_obj_dist = None | One of float
+
+let smallest_positive_distance ray robj =
+    let d_list = robj#shape#intersect ray in
+    try 
+        let d = d_list |> List.sort compare |> List.find ((>) 0.) in
+        One(d)
+    with
+        Not_found -> None
+
+let closest_object ray objects = 
+    let rec foo = function
+        | [] -> NoneI
+        | o::os -> let rest = foo os and o_smallest = smallest_positive_distance ray o in match rest, o_smallest with
+            | NoneI, None -> NoneI
+            | NoneI, One(d) -> OneI(o,d)
+            | OneI(o',d'), None -> OneI(o',d')
+            | OneI(o',d'), One(d) -> if d' < d then OneI(o',d') else OneI(o,d)
+    in
+    foo objects
 
 let cast_ray source destination scene =
     let ray = Ray(source, destination) in
@@ -101,8 +119,8 @@ let cast_ray source destination scene =
     let lights = get_scene_lights scene in
     let obj = closest_object ray objects in
     match obj with
-        | None -> V.create 0. 0. 0.
-        | One(o,d) -> let shape = o#shape and surface = o#surface in
+        | NoneI -> V.create 0. 0. 0.
+        | OneI(o,d) -> let shape = o#shape and surface = o#surface in
             let isect_point = V.add source (V.mul_scalar d destination) in (* chyba tak *)
             let normal_v = shape#normal isect_point in
             surface#color ray isect_point normal_v objects lights
