@@ -52,19 +52,44 @@ let parse_shape shape_json =
             | "plane" -> parse_plane shape_json
             | _ -> failwith "wrong shape type"
 
+let parse_light_central light_json = 
+    let open Yojson.Basic.Util in
+    let position = light_json |> member "position" |> to_list |> filter_float |> V.create_from_list in
+    let color = light_json |> member "color" |> to_list |> filter_float |> V.create_from_list in
+    ((new central position color) :> light)
+
+let parse_light light_json = 
+    let open Yojson.Basic.Util in
+    let light_type = light_json |> member "type" |> to_string in
+        match light_type with
+            | "central" -> parse_light_central light_json
+            | _ -> failwith "wrong light type"
+
 let parse_scatter surface_json =
     let open Yojson.Basic.Util in
     let color = surface_json |> member "color" |> to_list |> filter_float |> V.create_from_list in
-    ((new scatter color) :> 'a surface'')
+    (* problem z rzutowaniem na konkretny typ *)
+    ((new scatter color) :> surface')
 
 let parse_surface surface_json =
     let open Yojson.Basic.Util in
-    let surface_type = surface_json |> member "type" |> to_string in
-        match surface_type with
+    let surface_type' = surface_json |> member "type" |> to_string in
+        match surface_type' with
             | "scatter" -> parse_scatter surface_json
             | _ -> failwith "wrong surface type"
 
-(* let pasrse_scene scene_json *)
+let parse_robject robject_json =
+    let open Yojson.Basic.Util in
+    let surface = robject_json |> member "surface" |> parse_surface in
+    let shape = robject_json |> member "shape" |> parse_shape in
+    (new robject shape surface)
+
+let parse_scene scene_json = 
+    let open Yojson.Basic.Util in
+    (* trzeba parsować listy obiektow i swiatel a nie pojedyncze *)
+    let lights = scene_json |> member "lights" |> to_list |> parse_light in
+    let robjects = scene_json |> member "robjects" |> to_list |> parse_robject in
+    robjects, lights
 
 let () =
     let argNr = Array.length Sys.argv - 1 in
