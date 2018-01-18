@@ -93,10 +93,10 @@ let parse_scene scene_json =
 (* DONE PARSING *)
 
 let smallest_positive_distance ray robj =
-    let d_list = robj#shape#intersect ray in
+    let t_list = robj#shape#intersect ray in
     try 
-        let d = d_list |> List.sort compare |> List.find ((<) 0.) in
-        One(d *. V.length (ray_dir ray)) (* multiply param t times ray direction vector length *)
+        let t = t_list |> List.sort compare |> List.find ((<) 0.) in
+        One(t) (* multiply param t times ray direction vector length *)
     with
         Not_found -> None
 
@@ -105,9 +105,9 @@ let closest_object ray objects =
         | [] -> NoneI
         | o::os -> let rest = foo os and o_smallest = smallest_positive_distance ray o in match rest, o_smallest with
             | NoneI, None -> NoneI
-            | NoneI, One(d) -> OneI(o,d)
-            | OneI(o',d'), None -> OneI(o',d')
-            | OneI(o',d'), One(d) -> if d' < d then OneI(o',d') else OneI(o,d)
+            | NoneI, One(t) -> OneI(o,t)
+            | OneI(o',t'), None -> OneI(o',t')
+            | OneI(o',t'), One(t) -> if t' < t then OneI(o',t') else OneI(o,t)
     in
     foo objects
 
@@ -119,13 +119,16 @@ let cast_ray source destination scene =
     let objects = get_scene_objects scene in
     let lights = get_scene_lights scene in
     let obj = closest_object ray objects in
+    (* let _ = ray_print ray in *)
     match obj with
         | NoneI -> V.create 0. 0. 0.
-        | OneI(o,d) -> let shape = o#shape and surface = o#surface in
-            let isect_point = V.add source (V.mul_scalar d destination) in (* chyba tak *)
+        | OneI(o,t) -> let shape = o#shape and surface = o#surface in
+            let isect_point = V.mul_scalar t (ray_dir ray) in (* chyba tak *)
+            (* let _ = V.print isect_point; print_float t; print_char '\n' in *)
             let normal_v = shape#normal isect_point in
+            (* let _ = V.print normal_v in *)
             let tmp = surface#color ray isect_point normal_v objects lights in
-            print_color tmp;
+            (* print_color tmp; print_char '\n'; *)
             tmp
 
 (* should start from 0 or from 1 ??? *)
@@ -169,6 +172,7 @@ let draw_picture picture camera =
     Graphics.open_graph (" " ^ string_of_int width_int ^ "x" ^ string_of_int height_int);
     List.iter (fun pixel -> 
         let pixel_color_vect = get_pixel_color pixel in 
+        (* let _ = V.print pixel_color_vect; print_char '\n' in *)
         let trimmed_r, trimmed_g, trimmed_b = pixel_color_to_int_with_trim pixel_color_vect in
         let graphics_color = Graphics.rgb trimmed_r trimmed_g trimmed_b in
         Graphics.set_color graphics_color; 
@@ -195,10 +199,10 @@ let dummy_scene : scene =
     let shape2 = ((new plane (V.create 0. 0. 1.) (-.100.)) :> shape) in
     let surface1 = ((new scatter (V.create 200. 20. 10.)) :> surface') in
     let surface2 = ((new scatter (V.create 10. 20. 200.)) :> surface') in
-    let surface3 = ((new scatter (V.create 20. 200. 10.)) :> surface') in
+    let surface3 = ((new scatter (V.create 2. 3. 10.)) :> surface') in
     let obj1 = new robject shape1 surface1 in
-    let obj2 = new robject shape2 surface2 in
-    let light1 = ((new central (V.create 50. 100. 52.) (V.create 100. 30. 50.)) :> light) in
+    let obj2 = new robject shape2 surface1 in
+    let light1 = ((new central (V.create 50. 100. 52.) (V.create 150. 230. 200.)) :> light) in
     let objects = [obj2] in
     let lights = [light1] in
     Scene(objects, lights)

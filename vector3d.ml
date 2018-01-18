@@ -31,4 +31,6 @@ struct
         print_float x; print_char ' '; 
         print_float y; print_char ' ';
         print_float z; print_char ']'
+
+    let cos v1 v2 = dot v1 v2 /. ((length v1) *. (length v2))
 end

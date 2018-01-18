@@ -57,8 +57,12 @@ inherit shape
     
     method intersect r = 
         let denom = V.dot abc (ray_dir r) in
+            (* ray_print r; *)
             if denom == 0. then []
-            else [(-.(V.dot abc (ray_src r)) -. d ) /. denom]
+            else
+                let t = (-.(V.dot abc (ray_src r)) -. d ) /. denom in
+                (* print_float t; *)
+                [t]
            
     method normal _ = V.normalize abc
 end
@@ -86,16 +90,22 @@ inherit ['a, 'b] surface
                 lrobject
         in
         let rec light_iter acc = function
-            | [] -> V.create 0. 0. 0.
+            | [] -> acc
             | l::ls -> 
                 if (light_unreachable l) == false 
                 then
                     let isect_to_light_vect = (V.negate (l#direction isect_point)) in
-                    let normal' = if V.dot isect_to_light_vect normal_vect < 0. then
+                    (* let _ = V.print isect_to_light_vect; print_char '\n' in *)
+                    let normal' = if V.dot isect_to_light_vect normal_vect < 0. then    (* chce zeby normalny byl po tej stronie plaszczyzny co wektor do swiatla *)
                         V.negate normal_vect else normal_vect in
                     if V.dot isect_to_light_vect normal' < 0. 
                     then light_iter acc ls
-                    else light_iter (V.add acc ( V.mul (V.mul_scalar (V.dot normal' isect_to_light_vect) (l#intensity isect_point)) color'' )) ls 
+                    else 
+                        let angle = (V.cos normal' isect_to_light_vect) in (* cos czy dot?? *)
+                        let angle_multiplied = (V.mul_scalar angle (l#intensity isect_point)) in
+                        let current_ligth_color = V.mul angle_multiplied color'' in
+                        let new_acc = V.add acc current_ligth_color in 
+                            light_iter new_acc ls 
                 else light_iter acc ls
         in
         light_iter (V.create 0. 0. 0.) llight
@@ -125,10 +135,10 @@ class central (pos : V.t) (pwr : color) = object
     val power = pwr
 
     method intensity i =
-        let d = V.length @@ V.sub pos i in
+        let d = V.length @@ V.sub i pos in
         V.div_scalar (d*.d) pwr
     
-    method direction i = V.sub position i 
+    method direction i = V.sub i position
 end
 
 (* SCENE *)
