@@ -153,8 +153,14 @@ type robject' = light robject
 type pixel_f = V.t
 type pixel_i = int * int
 type pixel = Pixel of pixel_i * pixel_f * color
-let get_pixel_position = function Pixel(x,y,_) -> x, y
+let get_pixel_f = function Pixel(_,f,_) -> f
+let get_pixel_i = function Pixel(i,_,_) -> i
 let get_pixel_color = function Pixel(_,_,c) -> c
+
+let pixel_color_to_int_with_trim = function (r,g,b) -> 
+    let foo f = if f > 255. then 255. else f in
+    (int_of_float @@ foo r, int_of_float @@ foo g, int_of_float @@ foo b)
+
 
 type picture = pixel list
 

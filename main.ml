@@ -155,10 +155,20 @@ let raytrace camera scene =
     List.map (fun p -> 
         match p with (pixeli, pixelf) -> 
             let clr = cast_ray pixelf (get_camera_focus camera) scene in
-            pixeli, pixelf, clr
+            Pixel(pixeli, pixelf, clr)
         ) pixels
 
-let draw_picture picture = 
+let draw_picture picture camera = 
+    let res = get_camera_resolution camera in
+    let width_int = fst res and height_int = snd res in
+    Graphics.open_graph (" " ^ string_of_int width_int ^ "x" ^ string_of_int height_int);
+    List.iter (fun pixel -> 
+        let pixel_color_vect = get_pixel_color pixel in 
+        let trimmed_r, trimmed_g, trimmed_b = pixel_color_to_int_with_trim pixel_color_vect in
+        let graphics_color = Graphics.rgb trimmed_r trimmed_g trimmed_b in
+        Graphics.set_color graphics_color; Graphics.plot (get_pixel_i pixel |> fst) (get_pixel_i pixel |> snd);
+        ()
+        ) picture;
     ()
 
 let save_picture path picture =
@@ -177,7 +187,7 @@ let () =
         let camera = json |> member "camera" |> parse_camera in
         let scene = json |> member "scene" |> parse_scene in
         let picture = raytrace camera scene in
-        draw_picture picture; save_picture Sys.argv.(2) picture; 
+        draw_picture picture camera; save_picture Sys.argv.(2) picture; 
         print_string "saved picture\n";
         ()
 ;;

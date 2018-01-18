@@ -1,3 +1,4 @@
 true:	package(yojson)
 true: 	package(ppx_jane)
+true:   package(graphics)
 true: 	thread,debug
