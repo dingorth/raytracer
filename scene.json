@@ -3,30 +3,30 @@
         "lights": [
             {
                 "type": "central",
-                "position": [0.5, 1.0, 3.0],
-                "color": [100.0, 100.0, 255.0]
+                "position": [50.0, 100.0, 90.0],
+                "color": [1500.0, 2300.0, 200.0]
             }
         ],
         "robjects": [
             {
                 "shape":{
                     "type": "sphere",
-                    "center": [50.0, 50.0, 75.0],
-                    "radius": 30.0
+                    "center": [35.0, 50.0, 75.0],
+                    "radius": 19.0
                 },
                 "surface": {
                     "type": "scatter",
-                    "color": [0.0, 200.0, 100.0]
+                    "color": [10.0, 20.0, 200.0]
                 }
             },
             {
                 "shape":{
                     "type": "plane",
-                    "parameters": [0.0, 0.0, 1.0, 100.0]
+                    "parameters": [0.0, 0.0, 1.0, -100.0]
                 },
                 "surface": {
                     "type": "scatter",
-                    "color": [100.0, 20.0, 70.0]
+                    "color": [200.0, 20.0, 200.0]
                 }
             }
         ]
@@ -38,7 +38,7 @@
             "c": [0.0, 0.0, 0.0],
             "d": [100.0, 0.0, 0.0]
         },
-        "focus" : [120.0, 120.0, 50.0],
-        "resolution": [100, 100]
+        "focus" : [50.0, 50.0, 50.0],
+        "resolution": [400, 400]
     }
 }

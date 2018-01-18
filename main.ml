@@ -189,21 +189,22 @@ let save_picture path picture =
 let dummy_camera : camera = 
     let camera_position = V.create 0. 100. 0., V.create 100. 100. 0., V.create 0. 0. 0., V.create 100. 0. 0. in
     let focus = V.create 50. 50. 50. in
-    let resolution = 100, 100 in
+    let resolution = 300, 300 in
     let pixel_width = 1. in
     let pixel_height = 1. in
     camera_position, focus, pixel_width, pixel_height, resolution
 
 let dummy_scene : scene = 
-    let shape1 = ((new sphere (V.create 50. 50. 75.) 19.) :> shape) in
+    let shape1 = ((new sphere (V.create 35. 50. 75.) 19.) :> shape) in
     let shape2 = ((new plane (V.create 0. 0. 1.) (-.100.)) :> shape) in
-    let surface1 = ((new scatter (V.create 200. 20. 10.)) :> surface') in
+    let surface1 = ((new scatter (V.create 200. 20. 200.)) :> surface') in
     let surface2 = ((new scatter (V.create 10. 20. 200.)) :> surface') in
     let surface3 = ((new scatter (V.create 2. 3. 10.)) :> surface') in
-    let obj1 = new robject shape1 surface1 in
+    let obj1 = new robject shape1 surface2 in
     let obj2 = new robject shape2 surface1 in
-    let light1 = ((new central (V.create 50. 100. 52.) (V.create 150. 230. 200.)) :> light) in
-    let objects = [obj2] in
+    let light1 = ((new central (V.create 50. 100. 90.) (V.create 1500. 2300. 2000.)) :> light) in
+    let light2 = ((new sunlight (V.create 0. (-1.) 1.) (V.create 1. 1. 1.)) :> light) in
+    let objects = [obj1; obj2] in
     let lights = [light1] in
     Scene(objects, lights)
 
@@ -218,10 +219,11 @@ let () =
         let json = Yojson.Basic.from_file json_file in
         
         let open Yojson.Basic.Util in
-        (* let camera = json |> member "camera" |> parse_camera in *)
-        (* let scene = json |> member "scene" |> parse_scene in *)
-        let camera = dummy_camera in
-        let scene = dummy_scene in
+        (* poprawic parsowanie jsona *)
+        let camera = json |> member "camera" |> parse_camera in
+        let scene = json |> member "scene" |> parse_scene in
+        (* let camera = dummy_camera in *)
+        (* let scene = dummy_scene in *)
         let picture = raytrace camera scene in
         draw_picture picture camera; save_picture Sys.argv.(2) picture; 
         print_string "saved picture\n";

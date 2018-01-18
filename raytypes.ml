@@ -43,7 +43,7 @@ inherit shape
         b = 2. *. ((V.dot (ray_src r) (ray_dir r)) -. ( V.dot center (ray_dir r)  )  ) and
         c = lsq (ray_src r) +. lsq center -. 2. *. (V.dot (ray_src r) center) -. radius*.radius in
         let solved = solve_quadratic a b c in
-        print_float_list solved;
+        (* print_float_list solved; *)
         solved
 
     method normal v = V.normalize (V.sub v center)
@@ -78,7 +78,7 @@ class ['a, 'b] scatter (color': color) = object
 inherit ['a, 'b] surface
 (* 'a == light robject, 'b == light *)
 
-    val color'' = V.normalize color'
+    val color'' = color'
 
     method color (ray:ray) (isect_point:intersect_point) (normal_vect:normal_vect) (lrobject: 'a list) (llight: 'b list) = 
         let light_unreachable (l : 'b) = 
@@ -127,10 +127,11 @@ end
 class virtual light = object
     method virtual intensity : intersect_point -> color
     method virtual direction : intersect_point -> V.t
-
 end
 
 class central (pos : V.t) (pwr : color) = object
+    inherit light
+
     val position = pos
     val power = pwr
 
@@ -140,6 +141,16 @@ class central (pos : V.t) (pwr : color) = object
     
     method direction i = V.sub i position
 end
+
+class sunlight  dir (pwr:color)= object
+    inherit light
+
+    val power = pwr
+    val direction = dir
+
+    method direction _ = V.normalize direction 
+    method intensity i = pwr
+end 
 
 (* SCENE *)
 type scene = Scene of light robject list * light list
