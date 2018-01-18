@@ -4,7 +4,10 @@ type ray = Ray of V.t * V.t
 type normal_vect = V.t
 type intersect_point = V.t
 let ray_src = function Ray(s,_) -> s
-let ray_dir = function Ray(_,d) -> d
+let ray_dest = function Ray(_,d) -> d
+let ray_dir = function Ray(s,d) -> V.sub d s
+let ray_print = function Ray(s,d) ->
+    print_string "Ray("; V.print s; V.print d; print_char ')'; print_char '\n'
 
 type color = V.t
 
@@ -22,6 +25,9 @@ class virtual shape = object
     method virtual normal: V.t -> V.t
 end
 
+let print_float_list l =
+    print_string "d_list: "; List.iter  print_float l; print_string "\n"
+
 class sphere c r = object
 inherit shape
 
@@ -36,7 +42,9 @@ inherit shape
         let a = lsq (ray_dir r) and
         b = 2. *. ((V.dot (ray_src r) (ray_dir r)) -. ( V.dot center (ray_dir r)  )  ) and
         c = lsq (ray_src r) +. lsq center -. 2. *. (V.dot (ray_src r) center) -. radius*.radius in
-        solve_quadratic a b c
+        let solved = solve_quadratic a b c in
+        print_float_list solved;
+        solved
 
     method normal v = V.normalize (V.sub v center)
 end

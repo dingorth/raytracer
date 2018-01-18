@@ -95,8 +95,8 @@ let parse_scene scene_json =
 let smallest_positive_distance ray robj =
     let d_list = robj#shape#intersect ray in
     try 
-        let d = d_list |> List.sort compare |> List.find ((>) 0.) in
-        One(d)
+        let d = d_list |> List.sort compare |> List.find ((<) 0.) in
+        One(d *. V.length (ray_dir ray)) (* multiply param t times ray direction vector length *)
     with
         Not_found -> None
 
@@ -111,6 +111,9 @@ let closest_object ray objects =
     in
     foo objects
 
+let print_color = function (r,g,b) -> 
+    print_float r; print_float g; print_float b
+
 let cast_ray source destination scene =
     let ray = Ray(source, destination) in
     let objects = get_scene_objects scene in
@@ -121,7 +124,9 @@ let cast_ray source destination scene =
         | OneI(o,d) -> let shape = o#shape and surface = o#surface in
             let isect_point = V.add source (V.mul_scalar d destination) in (* chyba tak *)
             let normal_v = shape#normal isect_point in
-            surface#color ray isect_point normal_v objects lights
+            let tmp = surface#color ray isect_point normal_v objects lights in
+            print_color tmp;
+            tmp
 
 (* should start from 0 or from 1 ??? *)
 (* column x row *)
@@ -143,7 +148,7 @@ let generate_picture_points camera =
     let a_point = get_camera_position camera |> get_position_a in
     let b_point = get_camera_position camera |> get_position_b in
     let c_point = get_camera_position camera |> get_position_c in
-    let d_point = get_camera_position camera |> get_position_d in
+    (* let d_point = get_camera_position camera |> get_position_d in *)
     let a_to_b_vec = V.sub b_point a_point |> V.normalize |> V.mul_scalar pixel_width in
     let a_to_c_vec = V.sub c_point a_point |> V.normalize |> V.mul_scalar pixel_height in
     let p  = generate_picture_pixel_grid width_int height_int in
@@ -166,13 +171,38 @@ let draw_picture picture camera =
         let pixel_color_vect = get_pixel_color pixel in 
         let trimmed_r, trimmed_g, trimmed_b = pixel_color_to_int_with_trim pixel_color_vect in
         let graphics_color = Graphics.rgb trimmed_r trimmed_g trimmed_b in
-        Graphics.set_color graphics_color; Graphics.plot (get_pixel_i pixel |> fst) (get_pixel_i pixel |> snd);
+        Graphics.set_color graphics_color; 
+        (* Graphics.set_color (Graphics.rgb 200 0 0); *)
+        (* print_int graphics_color; *)
+        Graphics.plot (get_pixel_i pixel |> fst) (get_pixel_i pixel |> snd);
         ()
         ) picture;
     ()
 
 let save_picture path picture =
     ()
+
+let dummy_camera : camera = 
+    let camera_position = V.create 0. 100. 0., V.create 100. 100. 0., V.create 0. 0. 0., V.create 100. 0. 0. in
+    let focus = V.create 50. 50. 50. in
+    let resolution = 100, 100 in
+    let pixel_width = 1. in
+    let pixel_height = 1. in
+    camera_position, focus, pixel_width, pixel_height, resolution
+
+let dummy_scene : scene = 
+    let shape1 = ((new sphere (V.create 50. 50. 75.) 19.) :> shape) in
+    let shape2 = ((new plane (V.create 0. 0. 1.) (-.100.)) :> shape) in
+    let surface1 = ((new scatter (V.create 200. 20. 10.)) :> surface') in
+    let surface2 = ((new scatter (V.create 10. 20. 200.)) :> surface') in
+    let surface3 = ((new scatter (V.create 20. 200. 10.)) :> surface') in
+    let obj1 = new robject shape1 surface1 in
+    let obj2 = new robject shape2 surface2 in
+    let light1 = ((new central (V.create 50. 100. 52.) (V.create 100. 30. 50.)) :> light) in
+    let objects = [obj2] in
+    let lights = [light1] in
+    Scene(objects, lights)
+
 
 let () =
     let argNr = Array.length Sys.argv - 1 in
@@ -184,10 +214,14 @@ let () =
         let json = Yojson.Basic.from_file json_file in
         
         let open Yojson.Basic.Util in
-        let camera = json |> member "camera" |> parse_camera in
-        let scene = json |> member "scene" |> parse_scene in
+        (* let camera = json |> member "camera" |> parse_camera in *)
+        (* let scene = json |> member "scene" |> parse_scene in *)
+        let camera = dummy_camera in
+        let scene = dummy_scene in
         let picture = raytrace camera scene in
         draw_picture picture camera; save_picture Sys.argv.(2) picture; 
         print_string "saved picture\n";
         ()
 ;;
+
+let _ = read_line () ;;

@@ -25,4 +25,10 @@ struct
     let normalize v = div_scalar (abs_float (length v)) v
 
     let dist v1 v2 = let l = sub v1 v2 in dot l l |> sqrt
+
+    let print = function (x,y,z) -> 
+        print_char '[';
+        print_float x; print_char ' '; 
+        print_float y; print_char ' ';
+        print_float z; print_char ']'
 end

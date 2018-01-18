@@ -8,7 +8,7 @@
 
 .PHONY: all clean byte native profile debug sanity test
 
-OCB_FLAGS = -use-ocamlfind -I src -I lib 
+OCB_FLAGS = -use-ocamlfind -I src -I lib
 OCB = ocamlbuild $(OCB_FLAGS)  
 
 all: native byte # profile debug
@@ -17,10 +17,10 @@ clean:
 	$(OCB) -clean
 
 native: sanity
-	$(OCB) main.native
+	$(OCB) -tag 'debug' main.native
 
 byte: sanity
-	$(OCB) main.byte
+	$(OCB) -tag 'debug' main.byte
 
 profile: sanity
 	$(OCB) -tag profile main.native
