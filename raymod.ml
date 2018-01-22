@@ -179,32 +179,13 @@ let draw_picture picture camera =
         ) picture;
     ()
 
-let save_picture path picture =
-    ()
-
-(* let () =
-    let argNr = Array.length Sys.argv - 1 in
-    if argNr < 2
-    then
-        Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n"
-    else
-        let json_file = Sys.argv.(1) in
-        let option = Sys.argv.(2) in
-        match option with
-            | "show" ->  
-                let json = Yojson.Basic.from_file json_file in
-                let open Yojson.Basic.Util in
-                let camera = json |> member "camera" |> parse_camera in
-                let scene = json |> member "scene" |> parse_scene in
-                let picture = raytrace camera scene in
-                draw_picture picture camera; 
-                let  _ = read_line () in ()
-            | "save" -> if argNr == 3 then
-                let json = Yojson.Basic.from_file json_file in
-                let open Yojson.Basic.Util in
-                let camera = json |> member "camera" |> parse_camera in
-                let scene = json |> member "scene" |> parse_scene in
-                let picture = raytrace camera scene in
-                save_picture Sys.argv.(3) picture
-                else Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n"
-            | _ -> Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n" *)
+let save_picture path picture camera =
+    let channel = open_out path in
+    let res = get_camera_resolution camera in
+    let width_int = fst res and height_int = snd res in
+    Printf.fprintf channel "P3 \n%d %d\n 255\n" width_int height_int;
+    List.iter (fun pixel ->
+        let pixel_color_vect = get_pixel_color pixel in
+        let trimmed_r, trimmed_g, trimmed_b = pixel_color_to_int_with_trim pixel_color_vect in
+        Printf.fprintf channel "%d %d %d\n" trimmed_r trimmed_g trimmed_b
+    ) picture 

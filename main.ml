@@ -23,6 +23,6 @@ let () =
                 let camera = json |> member "camera" |> parse_camera in
                 let scene = json |> member "scene" |> parse_scene in
                 let picture = raytrace camera scene in
-                save_picture Sys.argv.(3) picture
+                save_picture Sys.argv.(3) picture camera
                 else Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n"
             | _ -> Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n"
