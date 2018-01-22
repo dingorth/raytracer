@@ -102,7 +102,7 @@ inherit ['a, 'b] surface
                     then light_iter acc ls
                     else 
                         let angle = (V.cos normal' isect_to_light_vect) in (* cos czy dot?? *)
-                        let angle_multiplied = (V.mul_scalar angle (l#intensity isect_point)) in
+                        let angle_multiplied = (V.mul_scalar angle (l#intensity isect_point lrobject)) in
                         let current_ligth_color = V.mul angle_multiplied color'' in
                         let new_acc = V.add acc current_ligth_color in 
                             light_iter new_acc ls 
@@ -125,7 +125,7 @@ end
 (* LIGHT *)
 
 class virtual light = object
-    method virtual intensity : intersect_point -> color
+    method virtual intensity : intersect_point -> (light robject) list -> color
     method virtual direction : intersect_point -> V.t
 end
 
@@ -135,21 +135,25 @@ class central (pos : V.t) (pwr : color) = object
     val position = pos
     val power = pwr
 
-    method intensity i =
+    method intensity i _ =
         let d = V.length @@ V.sub i pos in
         V.div_scalar (d*.d) pwr
     
     method direction i = V.sub i position
 end
 
-class sunlight  dir (pwr:color)= object
+class sunlight  dir (pwr : color) = object
     inherit light
 
     val power = pwr
     val direction = dir
 
     method direction _ = V.normalize direction 
-    method intensity i = pwr
+    method intensity i objects = 
+        let ray = Ray(i,V.negate direction |> V.add i) in
+        let is_shadowed = List.exists (fun o -> List.exists (fun e -> e > 0.) (o#shape#intersect ray) ) objects in
+        if is_shadowed then V.create 0. 0. 0.
+        else pwr
 end 
 
 (* SCENE *)
