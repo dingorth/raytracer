@@ -4,7 +4,7 @@ let () =
     let argNr = Array.length Sys.argv - 1 in
     if argNr < 2
     then
-        Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n"
+        Printf.fprintf stdout "usage: ./main.native [json_file] [save/show] [save_img_path opt] \n"
     else
         let json_file = Sys.argv.(1) in
         let option = Sys.argv.(2) in
@@ -24,5 +24,5 @@ let () =
                 let scene = json |> member "scene" |> parse_scene in
                 let picture = raytrace camera scene in
                 save_picture Sys.argv.(3) picture camera
-                else Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n"
-            | _ -> Printf.fprintf stdout "usage: ./raytracer [json_file] [save/show] [save_img_path opt] \n"
+                else Printf.fprintf stdout "usage: ./main.native [json_file] [save/show] [save_img_path opt] \n"
+            | _ -> Printf.fprintf stdout "usage: ./main.native [json_file] [save/show] [save_img_path opt] \n"

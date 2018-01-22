@@ -4,8 +4,8 @@
     `make`
 
 ## Wywołanie
-    - pokazanie obrazka `raytrace "json.json" "show"`
-    - zapisanie obrazka `raytrace "json.json" "save" "path"`
+    - pokazanie obrazka `./main.native "json.json" "show"`
+    - zapisanie obrazka `./main.native "json.json" "save" "path"`
 
 ## Opis generowanego obrazka
 
