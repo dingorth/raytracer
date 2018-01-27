@@ -57,15 +57,14 @@ inherit shape
     
     method intersect r = 
         let denom = V.dot abc (ray_dir r) in
-            (* ray_print r; *)
             if denom == 0. then []
             else
                 let t = (-.(V.dot abc (ray_src r)) -. d ) /. denom in
-                (* print_float t; *)
                 [t]
            
     method normal _ = V.normalize abc
 end
+
 
 (* SURFACES *)
 
@@ -82,6 +81,7 @@ inherit ['a, 'b] surface
 
     method color (ray:ray) (isect_point:intersect_point) (normal_vect:normal_vect) (lrobject: 'a list) (llight: 'b list) = 
         let light_unreachable (l : 'b) = 
+            (*jak wyliczać dla światła słonecznego?? *)
             let isect_to_light = Ray(isect_point, V.negate (l#direction isect_point)) in (* uwaga na kierunek swiatla *)
             List.exists (fun o -> 
                 let d_list = o#shape#intersect isect_to_light in 
